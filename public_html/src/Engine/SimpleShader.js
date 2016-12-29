@@ -44,13 +44,25 @@ function SimpleShader(vertexShaderID, fragmentShaderID){
 
   // Returns a compiled shader from a shader in the dom
     // The id is the id of the script html tag
-    SimpleShader.prototype._loadAndCompileShader = function(id, shaderType) {
-        var shaderText, shaderSource, compiledShader;
+    SimpleShader.prototype._loadAndCompileShader = function(filePath, shaderType) {
+        var xmlReq, shaderSource, compiledShader;
         var gl = gEngine.Core.getGL();
         
         // Step A: Get shader source from index.html
-        shaderText = document.getElementById(id);
-        shaderSource = shaderText.firstChild.textContent;
+        xmlReq = new XMLHttpRequest();
+        xmlReq.open('GET', filePath, false);
+        try {
+            xmlReq.send();
+        } catch(error) {
+            alert("Failed to load shader: " + filePath);
+            return null;
+        }
+        shaderSource = xmlReq.responseText;
+        
+        if (shaderSource === null) {
+            alert("WARNING: Loading of:" + filePath + " Failed!");
+            return null;
+        }
         
         // Step B: Create the shader based on the shader type: vertex or fragement
         compiledShader = gl.createShader(shaderType);
