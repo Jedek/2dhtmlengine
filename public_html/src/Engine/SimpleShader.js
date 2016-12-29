@@ -10,6 +10,8 @@ function SimpleShader(vertexShaderID, fragmentShaderID){
         // Reference to the pixelColor uniform in the fragment shader
     this.mModelTransform = null;
         // Reference to the uModelTransform matrix in the vertex shader
+    this.mViewProjTransform = null;
+        // Reference to the uViewProjTransform in the vertex shader
         
     var gl = gEngine.Core.getGL();
     
@@ -48,6 +50,7 @@ function SimpleShader(vertexShaderID, fragmentShaderID){
     // Step G: Gets a reference to the uniform variable uPixelColor in the fragment shader
     this.mPixelColor = gl.getUniformLocation(this.mCompiledShader, "uPixelColor");
     this.mModelTransform = gl.getUniformLocation(this.mCompiledShader, "uModelTransform");
+    this.mViewProjTransform = gl.getUniformLocation(this.mCompiledShader, "uViewProjTransform");
 };
 
   // Returns a compiled shader from a shader in the dom
@@ -88,9 +91,10 @@ function SimpleShader(vertexShaderID, fragmentShaderID){
         return compiledShader;
     };
     
-    SimpleShader.prototype.activateShader = function(pixelColor){
+    SimpleShader.prototype.activateShader = function(pixelColor, vpMatrix){
         var gl = gEngine.Core.getGL();
         gl.useProgram(this.mCompiledShader);
+        gl.uniformMatrix4fv(this.mViewProjTransform, false, vpMatrix);
         gl.enableVertexAttribArray(this.mShaderVertexPositionAttribute);
         gl.uniform4f(this.mPixelColor, pixelColor[0], pixelColor[1], pixelColor[2], pixelColor[3]);
     };

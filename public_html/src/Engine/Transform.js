@@ -24,16 +24,16 @@ Transform.prototype.setSize = function(width, height) {
     this.setWidth(width);
     this.setHeight(height);
 };
-Transform.prototype.getSize = function() { return this.mScale; };
-Transform.prototype.incSizeBy = function (delta) {
+Transform.prototype.getSize     = function() { return this.mScale; };
+Transform.prototype.incSizeBy   = function (delta) {
     this.incWidthBy(delta);
     this.incHeightBy(delta);
 };
-Transform.prototype.getWidth = function () { return this.mScale[0]; };
-Transform.prototype.setWidth = function (width) { this.mScale[0] = width; };
-Transform.prototype.incWidthBy = function (delta) { this.mScale[0] += delta; };
-Transform.prototype.getHeight = function () { return this.mScale[1]; };
-Transform.prototype.setHeight = function (height) { this.mScale[1] = height; };
+Transform.prototype.getWidth    = function () { return this.mScale[0]; };
+Transform.prototype.setWidth    = function (width) { this.mScale[0] = width; };
+Transform.prototype.incWidthBy  = function (delta) { this.mScale[0] += delta; };
+Transform.prototype.getHeight   = function () { return this.mScale[1]; };
+Transform.prototype.setHeight   = function (height) { this.mScale[1] = height; };
 Transform.prototype.incHeightBy = function (delta) { this.mScale[1] += delta; };
 
 // Rotation getters and setters
