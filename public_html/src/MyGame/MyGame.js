@@ -3,9 +3,14 @@
 function MyGame(htmlCanvasID) {
     // Step A: Initialize the webGL Context and the VertexBuffer
     gEngine.Core.initializeWebGL(htmlCanvasID);
-    var gl = gEngine.Core.getGL();
     
-    // Step B: Create the shader
+    // Step B: Setup the camera
+    this.mCamera = new Camera(
+            vec2.fromValues(20, 60), // center of the World Coordinate System
+            20, // Width of the WC
+            [20, 40, 600, 300]); // viewport (orgX, orgY, width, height)
+    
+    // Step C: Create the shader
     this.mConstColorShader = new SimpleShader(
             "src/GLSLShaders/SimpleVS.glsl", // Path to the VertexShader
             "src/GLSLShaders/SimpleFS.glsl"); // Path to the FragmentShader
@@ -24,49 +29,13 @@ function MyGame(htmlCanvasID) {
     this.mBLSq = new Renderable(this.mConstColorShader);
     this.mBLSq.setColor([0.1, 0.1, 0.1, 1]); // Top-right shows green
     
-    // Step D: Draw!
+    // Step E: Clear the canvas
     gEngine.Core.clearCanvas([0.9, 0.9, 0.9, 1]); // Clear the canvas
     
-    // Step E: Setting up the Viewport
-    // Step E1: Set up the viewport: area on canvas to be drawn
-    gl.viewport(
-            20, // The x position of bottom-left corner of the area to be drawn
-            40, // The y position of bottom-left corner of the area to be drawn
-            600, // Width of the area to be drawn
-            300 // Height of the area to be drawn
-        ); 
-    // Step E2: set up the corresponding scissor area t olimit clear area
-    gl.scissor(
-            20, // The x position of bottom-left corner of the area to be drawn
-            40, // The y position of bottom-left corner of the area to be drawn
-            600, // Width of the area to be drawn
-            300 // Height of the area to be drawn
-        );
-    // Step E3: enable the scissor area, clear and then disable the scisssor area
-    gl.enable(gl.SCISSOR_TEST);
-    gEngine.Core.clearCanvas([0.8, 0.8, 0.8, 1.0]); // Clear the scissor area
-    gl.disable(gl.SCISSOR_TEST);
-    
-    // Step F: set up view and projection matrices
-    var viewMatrix = mat4.create();
-    var projMatrix = mat4.create();
-    // Step F1: define the view matrix
-    mat4.lookAt(viewMatrix,
-        [20, 60, 10], // camera position
-        [20, 60, 0], // look at position
-        [0, 1, 0]); // orientation
-    // Step F2: define the projection matrix
-    mat4.ortho(projMatrix,
-        -10, // Distant to left of World Coordinate System
-        10, // Distant to right of WC
-        -5, // Distant to top of WC
-        5, // Distant to bottom of WC
-        0, // z-distant to near plane
-        1000); // z-distant to far plane
-    // Step F3: concatenate to form the View-Projection operator
-    var vpMatrix = mat4.create();
-    mat4.multiply(vpMatrix, projMatrix, viewMatrix);
-    
+    // Step F: Start drawing by activating the camera
+    this.mCamera.setupViewProjection();
+    var vpMatrix = this.mCamera.getVPMatrix();
+  
     // Step G: Draw the blue square
     this.mBlueSq.getXform().setPosition(20, 60); // to show alternative to setPosition
     this.mBlueSq.getXform().setRotationInRad(0.2); // This is in Degree
