@@ -29,12 +29,18 @@ Transform.prototype.incSizeBy   = function (delta) {
     this.incWidthBy(delta);
     this.incHeightBy(delta);
 };
+Transform.prototype.decSizeBy   = function (delta) {
+    this.decWidthBy(delta);
+    this.decHeightBy(delta);
+};
 Transform.prototype.getWidth    = function () { return this.mScale[0]; };
 Transform.prototype.setWidth    = function (width) { this.mScale[0] = width; };
 Transform.prototype.incWidthBy  = function (delta) { this.mScale[0] += delta; };
+Transform.prototype.decWidthBy  = function (delta) { this.mScale[0] = (this.mScale[0]-delta); };
 Transform.prototype.getHeight   = function () { return this.mScale[1]; };
 Transform.prototype.setHeight   = function (height) { this.mScale[1] = height; };
 Transform.prototype.incHeightBy = function (delta) { this.mScale[1] += delta; };
+Transform.prototype.decHeightBy = function (delta) { this.mScale[1] = (this.mScale[1]-delta); };
 
 // Rotation getters and setters
 Transform.prototype.setRotationInRad = function (rotationInRadians) {

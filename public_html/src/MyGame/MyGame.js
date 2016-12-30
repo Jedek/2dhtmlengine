@@ -7,6 +7,7 @@ function MyGame(htmlCanvasID) {
     // variables for the squares
     this.mWhiteSq = null;        // these are the Renderable objects
     this.mRedSq = null;
+    this.shouldInflate = true;
 
     // The camera to view the scene
     this.mCamera = null;
@@ -72,18 +73,30 @@ MyGame.prototype.draw = function () {
 // anything from this function!
 MyGame.prototype.update = function () {
     // For this very simple game, let's move the white square and pulse the red
-
+    
     // Step A: move the white square
     var whiteXform = this.mWhiteSq.getXform();
-    var deltaX = 0.05;
-    if (whiteXform.getXPos() > 30) // this is the right-bound of the window
-        whiteXform.setPosition(10, 60);
+    var deltaX = 0.10;
+    if (whiteXform.getXPos() > 40) // this is the right-bound of the window
+        whiteXform.setPosition(5, 60);
     whiteXform.incXPosBy(deltaX);
     whiteXform.incRotationByDegree(1);
-
+    
     // Step B: pulse the red square
     var redXform = this.mRedSq.getXform();
-    if (redXform.getWidth() > 5)
-        redXform.setSize(2, 2);
-    redXform.incSizeBy(0.05);
+    
+    if(this.shouldInflate) {
+        redXform.incSizeBy(0.05);
+        if (redXform.getWidth() > 5) {
+            this.shouldInflate = false;
+        }
+    } else {
+       redXform.decSizeBy(0.05);
+       if (redXform.getWidth() < 1) {
+            this.shouldInflate = true;
+        }
+    }
+    console.dir(redXform.getWidth());
+    
+    redXform.incRotationByDegree(100);
 };
