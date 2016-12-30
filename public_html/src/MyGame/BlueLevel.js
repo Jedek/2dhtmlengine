@@ -1,25 +1,21 @@
-"use strict";  // Operate in Strict mode such that variables must be declared before used!
+"use strict";
 
-function MyGame() {
+function BlueLevel() {
     // scene file name
-    this.kSceneFile = "Assets/scene.xml";
+    this.kSceneFile = "Assets/BlueLevel.xml";
     // all squares
-    this.mSqSet = new Array(); // These are renderable objects
-    
+    this.mSqSet = [];
     // The camera to view the scene
     this.mCamera = null;
 }
-gEngine.Core.inheritPrototype(MyGame, Scene);
+gEngine.Core.inheritPrototype(BlueLevel, Scene);
 
-MyGame.prototype.loadScene = function() {
+BlueLevel.prototype.loadScene = function() {
     gEngine.TextFileLoader.loadTextFile(this.kSceneFile,
-                gEngine.TextFileLoader.eTextFileType.eXMLFile);
-};
-MyGame.prototype.unloadScene = function() {
-    gEngine.TextFileLoader.unloadTextFile(this.kSceneFile);
+            gEngine.TextFileLoader.eTextFileType.eXMLFile);
 };
 
-MyGame.prototype.initialize = function () {
+BlueLevel.prototype.initialize = function () {
     var sceneParser = new SceneFileParser(this.kSceneFile);
     
     // Step A: Parse the Camera
@@ -31,7 +27,7 @@ MyGame.prototype.initialize = function () {
 
 // This is the draw function, make sure to setup proper drawing environment, and more
 // importantly, make sure to _NOT_ change any state.
-MyGame.prototype.draw = function () {
+BlueLevel.prototype.draw = function () {
     // Step A: clear the canvas
     gEngine.Core.clearCanvas([0.9, 0.9, 0.9, 1.0]); // clear to light gray
 
@@ -46,7 +42,7 @@ MyGame.prototype.draw = function () {
 
 // The Update function, updates the application state. Make sure to _NOT_ draw
 // anything from this function!
-MyGame.prototype.update = function () {
+BlueLevel.prototype.update = function () {
     // For this very simple game, let's move the white square and pulse the red
     var whiteXform = this.mSqSet[0].getXform();
     var deltaX = 0.05;
@@ -71,7 +67,10 @@ MyGame.prototype.update = function () {
     }
 };
 
-MyGame.prototype.unloadScene = function() {
-    var nextLevel = new BlueLevel(); // next level to be loaded
+BlueLevel.prototype.unloadScene = function() {
+    // unload the scene flie
+    gEngine.TextFileLoader.unloadTextFile(this.kSceneFile);
+    
+    var nextLevel = new MyGame(); // next level to be loaded
     gEngine.Core.startScene(nextLevel);
 };

@@ -40,6 +40,9 @@ gEngine.GameLoop = (function () {
 
             // Step D: now let's draw
             this.draw();    // Call MyGame.draw()
+        } else {
+            // the game loops has stopped, unload current scene!
+            mMyGame.unloadScene();
         }
     };
     
@@ -65,13 +68,18 @@ gEngine.GameLoop = (function () {
                     _startLoop();
                 });
     };
+    
+    var stop = function() {
+        mIsLoopRunning = false;
+    };
 
     // No Stop or Pause function, as all input are pull during the loop
     // once stopped, tricky to start the loop
     // You should implement pausing of game in game update.
 
     var mPublic = {
-        start: start
+        start: start,
+        stop: stop
     };
     return mPublic;
 
