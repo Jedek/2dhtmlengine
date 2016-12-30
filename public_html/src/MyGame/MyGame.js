@@ -1,47 +1,31 @@
 "use strict";  // Operate in Strict mode such that variables must be declared before used!
 
 function MyGame() {
-    // variables of the constant color shader
-    this.mConstColorShader = null;
-
-    // variables for the squares
-    this.mWhiteSq = null;        // these are the Renderable objects
-    this.mRedSq = null;
-
+    // scene file name
+    this.kSceneFile = "Assets/scene.xml";
+    // all squares
+    this.mSqSet = new Array(); // These are renderable objects
+    
     // The camera to view the scene
     this.mCamera = null;
-
-    // Initialize the game
-    this.initialize();
 }
 
+MyGame.prototype.loadScene = function() {
+    gEngine.TextFileLoader.loadTextFile(this.kSceneFile,
+                gEngine.TextFileLoader.eTextFileType.eXMLFile);
+};
+MyGame.prototype.unloadScene = function() {
+    gEngine.TextFileLoader.unloadTextFile(this.kSceneFile);
+};
+
 MyGame.prototype.initialize = function () {
-    // Step A: set up the cameras
-    this.mCamera = new Camera(
-        vec2.fromValues(20, 60),   // position of the camera
-        20,                        // width of camera
-        [20, 40, 600, 300]);       // viewport (orgX, orgY, width, height)
-
-    this.mCamera.setBackgroundColor([0.8, 0.8, 0.8, 1]);
-            // sets the background to dark gray
-
-    // Step  B: create the shader
-    this.mConstColorShader = gEngine.DefaultResources.getConstColorShader();
+    var sceneParser = new SceneFileParser(this.kSceneFile);
     
-    // Step  C: Create the Renderable objects:
-    this.mWhiteSq = new Renderable(this.mConstColorShader);
-    this.mWhiteSq.setColor([1, 1, 1, 1]);
-    this.mRedSq = new Renderable(this.mConstColorShader);
-    this.mRedSq.setColor([1, 0, 0, 1]);
-
-    // Step  D: Initialize the white Renderable object: centred, 5x5, rotated
-    this.mWhiteSq.getXform().setPosition(20, 60);
-    this.mWhiteSq.getXform().setRotationInRad(0.2); // In Radians
-    this.mWhiteSq.getXform().setSize(5, 5);
-
-    // Step  E: Initialize the red Renderable object: centered 2x2
-    this.mRedSq.getXform().setPosition(20, 60);
-    this.mRedSq.getXform().setSize(2, 2);
+    // Step A: Parse the Camera
+    this.mCamera = sceneParser.parseCamera();
+    
+    // Step B: Parse the squares
+    sceneParser.parseSquares(this.mSqSet);
 };
 
 // This is the draw function, make sure to setup proper drawing environment, and more
@@ -53,18 +37,17 @@ MyGame.prototype.draw = function () {
     // Step  B: Activate the drawing Camera
     this.mCamera.setupViewProjection();
 
-    // Step  C: Activate the white shader to draw
-    this.mWhiteSq.draw(this.mCamera.getVPMatrix());
-
-    // Step  D: Activate the red shader to draw
-    this.mRedSq.draw(this.mCamera.getVPMatrix());
+    // Step  C: Draw all squares
+    for (var i = 0; i<this.mSqSet.length; i++) {
+        this.mSqSet[i].draw(this.mCamera.getVPMatrix());
+    }
 };
 
 // The Update function, updates the application state. Make sure to _NOT_ draw
 // anything from this function!
 MyGame.prototype.update = function () {
     // For this very simple game, let's move the white square and pulse the red
-    var whiteXform = this.mWhiteSq.getXform();
+    var whiteXform = this.mSqSet[0].getXform();
     var deltaX = 0.05;
     
     // Step A: Test for white square movement
@@ -78,7 +61,7 @@ MyGame.prototype.update = function () {
     if(gEngine.Input.isKeyClicked(gEngine.Input.keys.Up))
         whiteXform.incRotationByDegree(1);
     
-    var redXform = this.mRedSq.getXform();
+    var redXform = this.mSqSet[1].getXform();
     // Step C: test for pulsing of the red square
     if(gEngine.Input.isKeyPressed(gEngine.Input.keys.Down)) {
         if (redXform.getWidth() > 5)

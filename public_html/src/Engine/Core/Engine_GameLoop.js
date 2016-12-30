@@ -42,11 +42,8 @@ gEngine.GameLoop = (function () {
             this.draw();    // Call MyGame.draw()
         }
     };
-
-    // update and draw functions must be set before this.
-    var start = function (myGame) {
-        mMyGame = myGame;
-
+    
+    var _startLoop = function() {
         // Step A: reset frame time 
         mPreviousTime = Date.now();
         mLagTime = 0.0;
@@ -56,6 +53,17 @@ gEngine.GameLoop = (function () {
 
         // Step C: request _runLoop to start when loading is done
         requestAnimationFrame(function () { _runLoop.call(mMyGame); });
+    }
+
+    // update and draw functions must be set before this.
+    var start = function (myGame) {
+        mMyGame = myGame;
+
+        gEngine.ResourceMap.setLoadCompleteCallback(
+                function() {
+                    mMyGame.initialize();
+                    _startLoop();
+                });
     };
 
     // No Stop or Pause function, as all input are pull during the loop

@@ -23,7 +23,7 @@ gEngine.Core = (function() {
     }
     
     var startScene = function (myGame) {
-        myGame.initialize.call(myGame); // Called in this way to keep correct context
+        myGame.loadScene.call(myGame); // Called in this way to keep correct context
         gEngine.GameLoop.start(myGame); // start the game loop after initialization is done
     };
 
