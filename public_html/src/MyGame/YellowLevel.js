@@ -1,23 +1,21 @@
 "use strict";
 
-function BlueLevel() {
+function YellowLevel() {
     // scene file name
-    this.kSceneFile = "Assets/BlueLevel.xml";
+    this.kSceneFile = "Assets/YellowLevel.xml";
     // all squares
     this.mSqSet = [];
     // The camera to view the scene
     this.mCamera = null;
-    
-    this.loadYellow = false;
 }
-gEngine.Core.inheritPrototype(BlueLevel, Scene);
+gEngine.Core.inheritPrototype(YellowLevel, Scene);
 
-BlueLevel.prototype.loadScene = function() {
+YellowLevel.prototype.loadScene = function() {
     gEngine.TextFileLoader.loadTextFile(this.kSceneFile,
             gEngine.TextFileLoader.eTextFileType.eXMLFile);
 };
 
-BlueLevel.prototype.initialize = function () {
+YellowLevel.prototype.initialize = function () {
     var sceneParser = new SceneFileParser(this.kSceneFile);
     
     // Step A: Parse the Camera
@@ -29,7 +27,7 @@ BlueLevel.prototype.initialize = function () {
 
 // This is the draw function, make sure to setup proper drawing environment, and more
 // importantly, make sure to _NOT_ change any state.
-BlueLevel.prototype.draw = function () {
+YellowLevel.prototype.draw = function () {
     // Step A: clear the canvas
     gEngine.Core.clearCanvas([0.9, 0.9, 0.9, 1.0]); // clear to light gray
 
@@ -44,7 +42,7 @@ BlueLevel.prototype.draw = function () {
 
 // The Update function, updates the application state. Make sure to _NOT_ draw
 // anything from this function!
-BlueLevel.prototype.update = function () {
+YellowLevel.prototype.update = function () {
     // For this very simple game, let's move the white square and pulse the red
     var whiteXform = this.mSqSet[0].getXform();
     var deltaX = 0.05;
@@ -54,15 +52,6 @@ BlueLevel.prototype.update = function () {
         whiteXform.incXPosBy(-deltaX);
         if (whiteXform.getXPos() < 11) // this is the right-bound of the window
             gEngine.GameLoop.stop();   
-    }
-    
-    if(gEngine.Input.isKeyPressed(gEngine.Input.keys.Right)) {
-        whiteXform.incXPosBy(deltaX);
-        console.log(whiteXform.getXPos());
-        if (whiteXform.getXPos() > 30) { // this is the right-bound of the window
-            this.loadYellow = true;
-            gEngine.GameLoop.stop();   
-        }     
     }
     
     // Step B: test for white square rotation
@@ -78,15 +67,10 @@ BlueLevel.prototype.update = function () {
     }
 };
 
-BlueLevel.prototype.unloadScene = function() {
+YellowLevel.prototype.unloadScene = function() {
     // unload the scene flie
     gEngine.TextFileLoader.unloadTextFile(this.kSceneFile);
-    var nextLevel;
-    console.log(this.loadYellow);
-    if(this.loadYellow) {
-        nextLevel = new YellowLevel(); // next level to be loaded
-    } else {
-        nextLevel = new MyGame(); // next level to be loaded
-    }
+    
+    var nextLevel = new MyGame(); // next level to be loaded
     gEngine.Core.startScene(nextLevel);
 };
