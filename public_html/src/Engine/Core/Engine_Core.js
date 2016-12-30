@@ -22,12 +22,21 @@ gEngine.Core = (function() {
         }
     }
     
-    // Initialize all engine components and shaders
-    var initializeEngineCore = function(htmlCanvasID) {
+    var startScene = function (myGame) {
+        myGame.initialize.call(myGame); // Called in this way to keep correct context
+        gEngine.GameLoop.start(myGame); // start the game loop after initialization is done
+    };
+
+    // initialize all of the EngineCore components
+    var initializeEngineCore = function (htmlCanvasID, myGame) {
         _initializeWebGL(htmlCanvasID);
         gEngine.VertexBuffer.initialize();
         gEngine.Input.initialize();
+
+        // Inits DefaultResources, when done, invoke the anonymous function to call startScene(myGame).
+        gEngine.DefaultResources.initialize(function () { startScene(myGame); });
     };
+
     
     var clearCanvas = function(color) {
         mGL.clearColor(color[0], color[1], color[2], color[3]); // Set the color to be cleared

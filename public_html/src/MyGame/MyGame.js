@@ -1,6 +1,6 @@
 "use strict";  // Operate in Strict mode such that variables must be declared before used!
 
-function MyGame(htmlCanvasID) {
+function MyGame() {
     // variables of the constant color shader
     this.mConstColorShader = null;
 
@@ -10,9 +10,6 @@ function MyGame(htmlCanvasID) {
 
     // The camera to view the scene
     this.mCamera = null;
-
-    // Initialize the webGL Context
-    gEngine.Core.initializeEngineCore(htmlCanvasID);
 
     // Initialize the game
     this.initialize();
@@ -29,10 +26,8 @@ MyGame.prototype.initialize = function () {
             // sets the background to dark gray
 
     // Step  B: create the shader
-    this.mConstColorShader = new SimpleShader(
-        "src/GLSLShaders/SimpleVS.glsl",      // Path to the VertexShader 
-        "src/GLSLShaders/SimpleFS.glsl");    // Path to the Simple FragmentShader    
-
+    this.mConstColorShader = gEngine.DefaultResources.getConstColorShader();
+    
     // Step  C: Create the Renderable objects:
     this.mWhiteSq = new Renderable(this.mConstColorShader);
     this.mWhiteSq.setColor([1, 1, 1, 1]);
@@ -47,9 +42,6 @@ MyGame.prototype.initialize = function () {
     // Step  E: Initialize the red Renderable object: centered 2x2
     this.mRedSq.getXform().setPosition(20, 60);
     this.mRedSq.getXform().setSize(2, 2);
-
-    // Step F: Start the game loop running
-    gEngine.GameLoop.start(this);
 };
 
 // This is the draw function, make sure to setup proper drawing environment, and more
