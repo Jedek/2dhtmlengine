@@ -8,15 +8,30 @@ function MyGame() {
     
     // The camera to view the scene
     this.mCamera = null;
+    
+    this.kBgClip = "Assets/Sounds/BGClip.mp3";
+    this.kCue = "Assets/Sounds/MyGame_cue.wav";
 }
 gEngine.Core.inheritPrototype(MyGame, Scene);
 
 MyGame.prototype.loadScene = function() {
     gEngine.TextFileLoader.loadTextFile(this.kSceneFile,
                 gEngine.TextFileLoader.eTextFileType.eXMLFile);
+    gEngine.AudioClips.loadAudio(this.kBgClip);
+    gEngine.AudioClips.loadAudio(this.kCue);
 };
 MyGame.prototype.unloadScene = function() {
-    gEngine.TextFileLoader.unloadTextFile(this.kSceneFile);
+    gEngine.AudioClips.stopBackgroundAudio();
+    
+    // unload the scene resources
+    // gEngine.AudioClips.unloadAudio(this.kBgClip);
+    // The above line is commented out on purpose because
+    // you know this clip will be used elsewhere in the game
+    // so you decide to not unload this clip!!
+    gEngine.AudioClips.unloadAudio(this.kCue);
+    
+    var nextLevel = new BlueLevel(); // next level to be loaded
+    gEngine.Core.startScene(nextLevel);
 };
 
 MyGame.prototype.initialize = function () {
@@ -27,6 +42,8 @@ MyGame.prototype.initialize = function () {
     
     // Step B: Parse the squares
     sceneParser.parseSquares(this.mSqSet);
+    
+    gEngine.AudioClips.playBackgroundAudio(this.kBgClip);
 };
 
 // This is the draw function, make sure to setup proper drawing environment, and more
@@ -58,6 +75,21 @@ MyGame.prototype.update = function () {
             gEngine.GameLoop.stop();   
     }
     
+        // Step A: Test for white square movement
+    if(gEngine.Input.isKeyPressed(gEngine.Input.keys.Right)) {
+        whiteXform.incXPosBy(deltaX);
+        if (whiteXform.getXPos() > 30) // this is the right-bound of the window
+            gEngine.GameLoop.stop();   
+    }
+    
+    if(gEngine.Input.isKeyClicked(gEngine.Input.keys.Left) || gEngine.Input.isKeyClicked(gEngine.Input.keys.Right)) {
+        gEngine.AudioClips.playACue(this.kCue);
+    }
+    
+    if(gEngine.Input.isKeyClicked(gEngine.Input.keys.Space)) {
+        gEngine.AudioClips.stopBackgroundAudio();
+    }
+    
     // Step B: test for white square rotation
     if(gEngine.Input.isKeyClicked(gEngine.Input.keys.Up))
         whiteXform.incRotationByDegree(1);
@@ -69,9 +101,4 @@ MyGame.prototype.update = function () {
             redXform.setSize(2, 2);
         redXform.incSizeBy(0.05);
     }
-};
-
-MyGame.prototype.unloadScene = function() {
-    var nextLevel = new BlueLevel(); // next level to be loaded
-    gEngine.Core.startScene(nextLevel);
 };

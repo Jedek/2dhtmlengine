@@ -7,12 +7,32 @@ function BlueLevel() {
     this.mSqSet = [];
     // The camera to view the scene
     this.mCamera = null;
+        
+    this.kBgClip = "Assets/Sounds/BGClip.mp3";
+    this.kCue = "Assets/Sounds/BlueLevel_cue.wav";
 }
 gEngine.Core.inheritPrototype(BlueLevel, Scene);
 
 BlueLevel.prototype.loadScene = function() {
     gEngine.TextFileLoader.loadTextFile(this.kSceneFile,
             gEngine.TextFileLoader.eTextFileType.eXMLFile);
+            
+    gEngine.AudioClips.loadAudio(this.kBgClip);
+    gEngine.AudioClips.loadAudio(this.kCue);
+};
+
+
+BlueLevel.prototype.unloadScene = function() {
+    // stop the background audio
+    gEngine.AudioClips.stopBackgroundAudio();
+    
+    // unload the scene flie and loaded Resources
+    gEngine.TextFileLoader.unloadTextFile(this.kSceneFile);
+    gEngine.AudioClips.unloadAudio(this.kBgClip);
+    gEngine.AudioClips.unloadAudio(this.kCue);
+    
+    var nextLevel = new MyGame(); // load the next level
+    gEngine.Core.startScene(nextLevel);
 };
 
 BlueLevel.prototype.initialize = function () {
@@ -23,6 +43,7 @@ BlueLevel.prototype.initialize = function () {
     
     // Step B: Parse the squares
     sceneParser.parseSquares(this.mSqSet);
+    gEngine.AudioClips.playBackgroundAudio(this.kBgClip);
 };
 
 // This is the draw function, make sure to setup proper drawing environment, and more
@@ -54,6 +75,17 @@ BlueLevel.prototype.update = function () {
             gEngine.GameLoop.stop();   
     }
     
+        // Step A: Test for white square movement
+    if(gEngine.Input.isKeyPressed(gEngine.Input.keys.Right)) {
+        whiteXform.incXPosBy(deltaX);
+        if (whiteXform.getXPos() > 30) // this is the right-bound of the window
+            gEngine.GameLoop.stop();   
+    }
+    
+    if(gEngine.Input.isKeyClicked(gEngine.Input.keys.Left) || gEngine.Input.isKeyClicked(gEngine.Input.keys.Right)) {
+        gEngine.AudioClips.playACue(this.kCue);
+    }
+    
     // Step B: test for white square rotation
     if(gEngine.Input.isKeyClicked(gEngine.Input.keys.Up))
         whiteXform.incRotationByDegree(1);
@@ -65,12 +97,4 @@ BlueLevel.prototype.update = function () {
             redXform.setSize(2, 2);
         redXform.incSizeBy(0.05);
     }
-};
-
-BlueLevel.prototype.unloadScene = function() {
-    // unload the scene flie
-    gEngine.TextFileLoader.unloadTextFile(this.kSceneFile);
-    
-    var nextLevel = new MyGame(); // next level to be loaded
-    gEngine.Core.startScene(nextLevel);
 };

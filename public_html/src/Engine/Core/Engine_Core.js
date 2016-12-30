@@ -32,6 +32,7 @@ gEngine.Core = (function() {
         _initializeWebGL(htmlCanvasID);
         gEngine.VertexBuffer.initialize();
         gEngine.Input.initialize();
+        gEngine.AudioClips.initAudioContext();
 
         // Inits DefaultResources, when done, invoke the anonymous function to call startScene(myGame).
         gEngine.DefaultResources.initialize(function () { startScene(myGame); });

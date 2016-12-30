@@ -5,6 +5,7 @@ var gEngine = gEngine || { };
 gEngine.ResourceMap = (function(){
     var MapEntry = function (rName) {
         this.mAsset = rName;
+        this.mRefCount = 1;
     };
 
     // Number of outstanding load operations
@@ -61,9 +62,18 @@ gEngine.ResourceMap = (function(){
     };
 
     var unloadAsset = function (rName) {
+        var c = 0;
         if (rName in mResourceMap) {
-            delete mResourceMap[rName];
+            mResourceMap[rName].mRefCount -= 1;
+            c = mResourceMap[rName].mRefCount;
+            if(c === 0) {
+                delete mResourceMap[rName];
+            }
         }
+    };
+    
+    var incAssetRefCount = function(rName) {
+        mResourceMap[rName].mRefCount += 1;
     };
     
     var mPublic = {
@@ -75,7 +85,8 @@ gEngine.ResourceMap = (function(){
         // resource storage
         retrieveAsset: retrieveAsset,
         unloadAsset: unloadAsset,
-        isAssetLoaded: isAssetLoaded
+        isAssetLoaded: isAssetLoaded,
+        incAssetRefCount: incAssetRefCount
     };
     return mPublic;
 }());
